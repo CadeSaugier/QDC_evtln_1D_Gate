@@ -40,8 +40,6 @@ def main():
 	pyplot.savefig('./gate_'+dataFileName+'.pdf',format='pdf')
 	print('--->Saved Figure '+'gate_'+dataFileName+'.pdf')
 	
-	###Show Figure
-	pyplot.show()
 
 ############# FUNCTION LIST #############
 def pull(data):
