@@ -107,15 +107,31 @@ int main(int argc, char* argv[])
 	int a, b;
 	cout << "---> Please Select Lower and Upper Domain Values" << endl;
 	cout << "Low Value: "; cin >> a;
+	while(a<0 or a>65535)
+	{
+		cout << "Invalid Value for Low! Please Enter Another Value...";
+		cout << "Low Value: "; cin >> a;
+	}
 	cout << "High Value: "; cin >> b;
+	while(b<a or b<0 or b>65535)
+	{
+		cout << "Invalid Value for High! Please Enter Another Value...";
+		cout << "High Value: "; cin >> b;
+	}
 	
 	//Make Gate Plot on Original Data
-	system(("python3 ./include/plotgate1d.py ./temp.xy "+to_string(a)+" "+to_string(b)+" &").c_str());
+	system(("python3 ./include/plotgate1d.py ./temp.xy "+to_string(a)+" "+to_string(b)).c_str());
 	
+	//Make Output Files and Start Gate Loop
+	dataFile.open(fileLoc);
+	for(int i=0; i<3; i++) {dataFile >> read;}
+	system("mkdir output");
+	//here continue
 	
+	dataFile.close();
 	
 	//Clean Up
-	//system("rm temp.xy");
+	system("rm temp.xy");
 	
 	
 	
