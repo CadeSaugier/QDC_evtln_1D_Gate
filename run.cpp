@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 	ifstream dataFile;
 	dataFile.open(fileLoc);
 	ofstream dataOut;
-	dataOut.open("temp.xy");
+	dataOut.open("temp_"+dataName+".xy");
 	histo dataHist;
 	string read;
 	for(int i=0; i<3; i++) {dataFile >> read;}
@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
 	dataOut.close();
 	
 	//Plot and Ask for Domain Values
-	system("python3 ./include/plotonly1d.py ./temp.xy &");
+	system(("python3 ./include/plotonly1d.py ./temp_"+dataName+".xy &").c_str());
 	std::this_thread::sleep_for(std::chrono::seconds(4));
 	int a, b;
 	cout << "---> Please Select Lower and Upper Domain Values" << endl;
@@ -120,7 +120,9 @@ int main(int argc, char* argv[])
 	}
 	
 	//Make Gate Plot on Original Data
-	system(("python3 ./include/plotgate1d.py ./temp.xy "+to_string(a)+" "+to_string(b)).c_str());
+	system(("python3 ./include/plotgate1d.py ./temp_"+dataName+".xy "+to_string(a)+" "+to_string(b)).c_str());
+	
+	/*
 	
 	//Make Output Files and Start Gate Loop
 	dataFile.open(fileLoc);
@@ -132,6 +134,9 @@ int main(int argc, char* argv[])
 	
 	//Clean Up
 	system("rm temp.xy");
+	
+	
+	*/
 	
 	
 	

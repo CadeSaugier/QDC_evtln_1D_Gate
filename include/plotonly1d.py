@@ -14,7 +14,7 @@ def main():
 	###Get File Name
 	k=0
 	for i in range(len(sys.argv[1])):
-		if sys.argv[1][i]=='/':
+		if sys.argv[1][i]=='_':
 			k=i
 	k+=1
 	dataFileName=sys.argv[1][k:-3]
