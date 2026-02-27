@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 		dataName=argv[2];
 		int ID=find(dataName);
 	
-	//Get File Name
+	//Get File Name and Make Output Directory
 		string fileName;
 		int fileMarker, lastDir=0, val=0;
 		for(int i=0; i<fileLoc.length(); i++)
@@ -77,66 +77,90 @@ int main(int argc, char* argv[])
 			if(fileLoc[i]=='.') {fileMarker=i;}
 		}
 		fileName=fileLoc.substr(lastDir+val,fileMarker-lastDir-val);
+		system(("mkdir output_"+fileName).c_str());
 	
 	//Display
 		cout << "\n\n>>> Gating File " << fileName << " via " << dataName << endl;
 	
-	//Build Requested xy File
-	ifstream dataFile;
-	dataFile.open(fileLoc);
-	ofstream dataOut;
-	dataOut.open("temp_"+dataName+".xy");
-	histo dataHist;
-	string read;
-	for(int i=0; i<3; i++) {dataFile >> read;}
-	while(!dataFile.eof())
-	{
-		dataHist.plug(get(read,ID));
-		dataFile >> read;
-	}
-	dataFile.close();
-	for(int i=0; i<65536; i++)
-	{
-		dataOut << to_string(i) << "  " << to_string(dataHist.get(i)) << "\n";
-	}
-	dataOut.close();
-	
+	//Build Requested xy Temp. File
+		ifstream dataFile;
+		dataFile.open(fileLoc);
+		ofstream dataOut;
+		dataOut.open("temp_"+dataName+".xy");
+		histo dataHist;
+		string read;
+		for(int i=0; i<3; i++) {dataFile >> read;}
+		while(!dataFile.eof())
+		{
+			dataHist.plug(get(read,ID));
+			dataFile >> read;
+		}
+		dataFile.close();
+		for(int i=0; i<65536; i++)
+		{
+			dataOut << to_string(i) << "  " << to_string(dataHist.get(i)) << "\n";
+		}
+		dataOut.close();
+		
 	//Plot and Ask for Domain Values
-	system(("python3 ./include/plotonly1d.py ./temp_"+dataName+".xy &").c_str());
-	std::this_thread::sleep_for(std::chrono::seconds(4));
-	int a, b;
-	cout << "---> Please Select Lower and Upper Domain Values" << endl;
-	cout << "Low Value: "; cin >> a;
-	while(a<0 or a>65535)
-	{
-		cout << "Invalid Value for Low! Please Enter Another Value...";
+		system(("python3 ./include/plotonly1d.py ./temp_"+dataName+".xy &").c_str());
+		std::this_thread::sleep_for(std::chrono::seconds(4));
+		int a, b;
+		cout << "---> Please Select Lower and Upper Domain Values" << endl;
 		cout << "Low Value: "; cin >> a;
-	}
-	cout << "High Value: "; cin >> b;
-	while(b<a or b<0 or b>65535)
-	{
-		cout << "Invalid Value for High! Please Enter Another Value...";
+		while(a<0 or a>65535)
+		{
+			cout << "Invalid Value for Low! Please Enter Another Value...";
+			cout << "Low Value: "; cin >> a;
+		}
 		cout << "High Value: "; cin >> b;
-	}
-	
+		while(b<a or b<0 or b>65535)
+		{
+			cout << "Invalid Value for High! Please Enter Another Value...";
+			cout << "High Value: "; cin >> b;
+		}
+		
 	//Make Gate Plot on Original Data
-	system(("python3 ./include/plotgate1d.py ./temp_"+dataName+".xy "+to_string(a)+" "+to_string(b)).c_str());
-	
-	/*
-	
-	//Make Output Files and Start Gate Loop
-	dataFile.open(fileLoc);
-	for(int i=0; i<3; i++) {dataFile >> read;}
-	system("mkdir output");
-	//here continue
-	
-	dataFile.close();
-	
+		system(("python3 ./include/plotgate1d.py ./temp_"+dataName+".xy "+to_string(a)+" "+to_string(b)).c_str());
+		
 	//Clean Up
-	system("rm temp.xy");
-	
-	
-	*/
+		system(("rm temp_"+dataName+".xy").c_str());
+		system(("mv original_"+dataName+".pdf output_"+fileName+"/").c_str());
+		system(("mv gate_"+dataName+".pdf output_"+fileName+"/").c_str());
+		
+	//Make Output Files and Start Gate Loop
+		dataFile.open(fileLoc);
+		//for(int i=0; i<3; i++) {dataFile >> read;}
+		histo longHist, shortHist, psdHist, tofHist, chanHist;
+		ofstream longFile, shortFile, psdFile, tofFile, chanFile;
+		longFile.open("./output_"+fileName+"/long_gated-"+dataName+".xy");
+		shortFile.open("./output_"+fileName+"/short_gated-"+dataName+".xy");
+		psdFile.open("./output_"+fileName+"/psd_gated-"+dataName+".xy");
+		tofFile.open("./output_"+fileName+"/tof_gated-"+dataName+".xy");
+		chanFile.open("./output_"+fileName+"/chan_gated-"+dataName+".xy");
+		ofstream eventLine;
+		eventLine.open("./output_"+fileName+"/"+fileName+"_"+dataName+".evtln");
+		dataFile >> read;
+		eventLine << read;
+		dataFile >> read;
+		eventLine << " " << read << "\n";
+		dataFile >> read;
+		int value;
+		int longcheck=get(read,2);
+		cout << longcheck << endl;
+		/*
+		while(!dataFile.eof())
+		{
+			value=
+		}
+		*/
+		
+		longFile.close();
+		shortFile.close();
+		psdFile.close();
+		tofFile.close();
+		chanFile.close();
+		eventLine.close();
 	
 	
 	
