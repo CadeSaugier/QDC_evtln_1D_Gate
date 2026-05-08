@@ -63,6 +63,9 @@ int main(int argc, char* argv[])
 	cout << "\t--->By: Cade S.\n\n";
 	
 	//Record Inputs
+		if(argc < 3) {cout << "---> Error! Missing File or Data Type!\n"; return 1;}
+		bool gategiven=false;
+		if(argc > 3 and argc < 6) {gategiven=true;}
 		string fileLoc, dataName;
 		fileLoc=argv[1];
 		dataName=argv[2];
@@ -81,6 +84,7 @@ int main(int argc, char* argv[])
 	
 	//Display
 		cout << "\n\n>>> Gating File " << fileName << " via " << dataName << endl;
+		if(gategiven) {cout << "---> Domain === [" << argv[3] << "," << argv[4] << "]\n";}
 	
 	//Build Requested xy Temp. File
 		ifstream dataFile;
@@ -103,21 +107,31 @@ int main(int argc, char* argv[])
 		dataOut.close();
 		
 	//Plot and Ask for Domain Values
-		system(("python3 ./include/plotonly1d.py ./temp_"+dataName+".xy &").c_str());
-		std::this_thread::sleep_for(std::chrono::seconds(4));
+		//	system(("python3 ./include/plotonly1d.py ./temp_"+dataName+".xy &").c_str());
+		//	std::this_thread::sleep_for(std::chrono::seconds(4));
 		int a, b;
-		cout << "---> Please Select Lower and Upper Domain Values" << endl;
-		cout << "Low Value: "; cin >> a;
-		while(a<0 or a>65535)
+		if(gategiven)
 		{
-			cout << "Invalid Value for Low! Please Enter Another Value...";
-			cout << "Low Value: "; cin >> a;
+			a=stoi(argv[3]);
+			b=stoi(argv[4]);
 		}
-		cout << "High Value: "; cin >> b;
-		while(b<a or b<0 or b>65535)
+		else
 		{
-			cout << "Invalid Value for High! Please Enter Another Value...";
+			system(("python3 ./include/plotonly1d.py ./temp_"+dataName+".xy &").c_str());
+			std::this_thread::sleep_for(std::chrono::seconds(4));
+			cout << "---> Please Select Lower and Upper Domain Values" << endl;
+			cout << "Low Value: "; cin >> a;
+			while(a<0 or a>65535)
+			{
+				cout << "Invalid Value for Low! Please Enter Another Value...";
+				cout << "Low Value: "; cin >> a;
+			}
 			cout << "High Value: "; cin >> b;
+			while(b<a or b<0 or b>65535)
+			{
+				cout << "Invalid Value for High! Please Enter Another Value...";
+				cout << "High Value: "; cin >> b;
+			}
 		}
 		
 	//Make Gate Plot on Original Data
@@ -146,21 +160,40 @@ int main(int argc, char* argv[])
 		eventLine << " " << read << "\n";
 		dataFile >> read;
 		int value;
-		int longcheck=get(read,2);
-		cout << longcheck << endl;
-		/*
-		while(!dataFile.eof())
+		while (!dataFile.eof())
 		{
-			value=
+			value=get(read,ID);
+			//cout << read << endl << "V = " << to_string(value) << endl;
+			if(value>a and value<b)
+			{
+				//cout << "within range" << endl;
+				longHist.plug(get(read,2));
+				shortHist.plug(get(read,1));
+				psdHist.plug(get(read,3));
+				tofHist.plug(get(read,4));
+				chanHist.plug(get(read,5));
+			}
+			dataFile >> read;
 		}
-		*/
 		
+		for(int i=0; i<65536; i++)
+		{
+			longFile << to_string(i) << "  " << to_string(longHist.get(i)) << "\n";
+			shortFile << to_string(i) << "  " << to_string(shortHist.get(i)) << "\n";
+			psdFile << to_string(i) << "  " << to_string(psdHist.get(i)) << "\n";
+			tofFile << to_string(i) << "  " << to_string(tofHist.get(i)) << "\n";
+			chanFile << to_string(i) << "  " << to_string(chanHist.get(i)) << "\n";
+		}
 		longFile.close();
 		shortFile.close();
 		psdFile.close();
 		tofFile.close();
 		chanFile.close();
 		eventLine.close();
+		
+		
+		
+		
 	
 	
 	

@@ -26,17 +26,22 @@ def main():
 	###Build 1D Hist. Plot
 	print('\n>>> Generating Gate Plot <<<')
 	pyplot.figure(1, figsize=(10,7))
-	pyplot.title(dataFileName+' Gate',fontsize=24)
 	pyplot.xlabel('Bin (arb)',fontsize=20)
 	pyplot.ylabel('Counts',fontsize=20)
 	pyplot.stairs(data[1],color='black')
+	
+	###Save Figure Original
+	pyplot.title(dataFileName,fontsize=24)
+	pyplot.savefig('./original_'+dataFileName+'.pdf',format='pdf')
+	print('--->Saved Figure '+'original_'+dataFileName+'.pdf')
 	
 	###Build Gate Lines
 	top=max(data[1])
 	pyplot.plot([a,a],[0,top],color='red',linestyle='dashed')
 	pyplot.plot([b,b],[0,top],color='red',linestyle='dashed')
 	
-	###Save Figure
+	###Save Figure Gate
+	pyplot.title(dataFileName+' Gate',fontsize=24)
 	pyplot.savefig('./gate_'+dataFileName+'.pdf',format='pdf')
 	print('--->Saved Figure '+'gate_'+dataFileName+'.pdf')
 	

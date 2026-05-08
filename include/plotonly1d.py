@@ -27,10 +27,6 @@ def main():
 	pyplot.ylabel('Counts',fontsize=20)
 	pyplot.stairs(data[1],color='black')
 	
-	###Save Figure
-	pyplot.savefig('./original_'+dataFileName+'.pdf',format='pdf')
-	print('--->Saved Figure '+'original_'+dataFileName+'.pdf')
-	
 	###Show Figure
 	pyplot.show()
 
