@@ -1,4 +1,23 @@
-QDC EVTLN 1D GATE v1.0.0 {2/16/2026}
+QDC EVTLN 1D GATE v1.0.0 {5/8/2026}
 
 --->What is this?
->>>This code will
+>>>This code will read an event-line (.evtln) file type and gate the data based on a domain specified by the user. This domain may be in terms of long, short, psd, tof, or time-channel. The code will output updated histograms in .xy format as well as another event-line file. This new event-line file may be used for further gating.
+
+--->How do I install this?
+>>>This program uses both C++ and Python3. On Linux systems g++ may be used to compile the C++ code directly. A simple shell script is included and may be run by "source local_install.sh". If you wish to install this code globally, a symbolic link may be made to the directory the binary is built in.
+>>>REQUIREMENTS: Python package "matplotlib"
+
+--->How do I use this?
+>>> The binary Gate1D takes either 2 or 4 arguments.
+>>> The primary arguments is the event-line file of interest.
+>>> The secondary argument is the data set the user is interested in gating. This may be selected from the list: long, short, chan (Channel Time), psd, and tof.
+
+
+--->Examples:
+	Gate via PSD)
+		$>./Gate1D /path/to/your/file/MyExcellentData.evtln psd
+	Gate via TOF with cmd-line parameters)
+		$>./Gate1D /the/data/i/want/to/gate/TheDatas.evtln tof 15000 45000
+--->Questions?
+>>>Find Cade S. in EAL 115
+>>>Email Cade S. at cs192623@ohio.edu

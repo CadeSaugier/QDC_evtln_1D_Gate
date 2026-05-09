@@ -107,8 +107,6 @@ int main(int argc, char* argv[])
 		dataOut.close();
 		
 	//Plot and Ask for Domain Values
-		//	system(("python3 ./include/plotonly1d.py ./temp_"+dataName+".xy &").c_str());
-		//	std::this_thread::sleep_for(std::chrono::seconds(4));
 		int a, b;
 		if(gategiven)
 		{
@@ -138,13 +136,13 @@ int main(int argc, char* argv[])
 		system(("python3 ./include/plotgate1d.py ./temp_"+dataName+".xy "+to_string(a)+" "+to_string(b)).c_str());
 		
 	//Clean Up
+		cout << "\n---> Cleaning Up Temp. Files..." << endl;
 		system(("rm temp_"+dataName+".xy").c_str());
 		system(("mv original_"+dataName+".pdf output_"+fileName+"/").c_str());
 		system(("mv gate_"+dataName+".pdf output_"+fileName+"/").c_str());
 		
 	//Make Output Files and Start Gate Loop
 		dataFile.open(fileLoc);
-		//for(int i=0; i<3; i++) {dataFile >> read;}
 		histo longHist, shortHist, psdHist, tofHist, chanHist;
 		ofstream longFile, shortFile, psdFile, tofFile, chanFile;
 		longFile.open("./output_"+fileName+"/long_gated-"+dataName+".xy");
@@ -153,29 +151,33 @@ int main(int argc, char* argv[])
 		tofFile.open("./output_"+fileName+"/tof_gated-"+dataName+".xy");
 		chanFile.open("./output_"+fileName+"/chan_gated-"+dataName+".xy");
 		ofstream eventLine;
-		eventLine.open("./output_"+fileName+"/"+fileName+"_"+dataName+".evtln");
+		eventLine.open("./output_"+fileName+"/"+fileName+"_"+dataName+"_gate.evtln");
 		dataFile >> read;
 		eventLine << read;
 		dataFile >> read;
 		eventLine << " " << read << "\n";
+		cout << "---> Beginning Gate Loop..." << endl;
 		dataFile >> read;
 		int value;
 		while (!dataFile.eof())
 		{
 			value=get(read,ID);
-			//cout << read << endl << "V = " << to_string(value) << endl;
 			if(value>a and value<b)
 			{
-				//cout << "within range" << endl;
 				longHist.plug(get(read,2));
 				shortHist.plug(get(read,1));
 				psdHist.plug(get(read,3));
 				tofHist.plug(get(read,4));
 				chanHist.plug(get(read,5));
+				eventLine << read << "\n";
 			}
 			dataFile >> read;
 		}
+		eventLine.close();
+		cout << "---> Finished!\n";
 		
+	//Write Data to Output Files
+		cout << "\n---> Updating Histogram Files in Output Directory" << endl;
 		for(int i=0; i<65536; i++)
 		{
 			longFile << to_string(i) << "  " << to_string(longHist.get(i)) << "\n";
@@ -189,18 +191,7 @@ int main(int argc, char* argv[])
 		psdFile.close();
 		tofFile.close();
 		chanFile.close();
-		eventLine.close();
-		
-		
-		
-		
 	
-	
-	
-	
-	
-	
-	
-	
+	cout << "---> Complete!" << endl;
 	return 0;
 }
